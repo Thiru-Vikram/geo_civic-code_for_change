@@ -19,6 +19,14 @@ public class User {
     @Column(nullable = false)
     private String role = "USER"; // Default role
 
+    private String fullName;
+    private String phoneNumber;
+    private String area;
+    private String avatarUrl;
+
+    @Column(name = "civic_coins")
+    private Integer civicCoins = 0;
+
     public User() {
     }
 
@@ -59,5 +67,45 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getFullName() {
+        return fullName;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getArea() {
+        return area;
+    }
+
+    public void setArea(String area) {
+        this.area = area;
+    }
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
+
+    public Integer getCivicCoins() {
+        return civicCoins;
+    }
+
+    public void setCivicCoins(Integer civicCoins) {
+        this.civicCoins = civicCoins;
     }
 }
