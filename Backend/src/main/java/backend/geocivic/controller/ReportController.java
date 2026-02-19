@@ -42,6 +42,33 @@ public class ReportController {
         return reportRepository.findAll();
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Report> getReportById(@PathVariable Long id) {
+        return reportRepository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PutMapping("/{id}/verify")
+    public ResponseEntity<?> verifyReport(@PathVariable Long id) {
+        return reportRepository.findById(id).map(report -> {
+            report.setIsVerified(true);
+            Report savedReport = reportRepository.save(report);
+
+            // Increment user score or coins if verification is successful
+            User user = report.getUser();
+            user.setCivicCoins(user.getCivicCoins() + 50); // Reward for verifying
+            userRepository.save(user);
+
+            // Create notification for the user
+            notificationRepository.save(new Notification(user,
+                    "Success! You've verified TKT-" + String.format("%03d", report.getId())
+                            + " and earned 50 CC. Keep it up!"));
+
+            return ResponseEntity.ok(savedReport);
+        }).orElse(ResponseEntity.notFound().build());
+    }
+
     @GetMapping("/user/{userId}")
     public List<Report> getReportsByUser(@PathVariable Long userId) {
         return reportRepository.findByUserId(userId);

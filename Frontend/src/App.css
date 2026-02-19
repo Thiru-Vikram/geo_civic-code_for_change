@@ -9,9 +9,9 @@
     50% { transform: translateY(-5px); }
 }
 
-/* Custom shadow for emerald elements */
-.shadow-emerald-200 {
-    shadow-color: rgba(16, 185, 129, 0.2);
+/* Custom shadow utility */
+.shadow-emerald-custom {
+    box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.1), 0 4px 6px -2px rgba(16, 185, 129, 0.05);
 }
 
 /* Ensure smooth transitions across the app */

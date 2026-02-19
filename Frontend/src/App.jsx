@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard';
 import Reports from './pages/Reports';
 import AddReport from './pages/AddReport';
 import Profile from './pages/Profile';
+import ReportDetails from './pages/ReportDetails';
 import MainLayout from './components/MainLayout';
 import './App.css';
 
@@ -33,6 +34,7 @@ function App() {
             <Route index element={<Navigate to="/dashboard" />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="reports" element={<Reports />} />
+            <Route path="reports/:id" element={<ReportDetails />} />
             <Route path="add-report" element={<AddReport />} />
             <Route path="profile" element={<Profile />} />
           </Route>

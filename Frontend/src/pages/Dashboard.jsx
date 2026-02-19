@@ -1,29 +1,79 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 import { 
   Plus, 
   ChevronRight, 
-  MapPin, 
   Clock, 
   CheckCircle2, 
-  AlertCircle 
+  AlertCircle,
+  Loader2
 } from 'lucide-react';
 
 const Dashboard = () => {
-  const user = JSON.parse(localStorage.getItem('user'));
+  const getUser = () => {
+    try {
+      const stored = localStorage.getItem('user');
+      return stored ? JSON.parse(stored) : null;
+    } catch (e) {
+      return null;
+    }
+  };
+
+  const user = getUser();
+  const [reports, setReports] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchReports = async () => {
+      if (!user?.id) {
+        setLoading(false);
+        return;
+      }
+      try {
+        const response = await axios.get(`http://localhost:8080/api/reports/user/${user.id}`);
+        if (Array.isArray(response.data)) {
+          setReports(response.data);
+        }
+      } catch (err) {
+        console.error("Error fetching dashboard data:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchReports();
+  }, [user?.id]);
 
   const stats = [
-    { label: 'Total Tickets', value: 6, icon: null },
-    { label: 'Civic Score', value: 78, icon: null },
-    { label: 'Open', value: 2, icon: null },
-    { label: 'Resolved', value: 2, icon: null },
+    { label: 'Total Tickets', value: reports.length },
+    { label: 'Civic Coins', value: user?.civicCoins || 0 },
+    { label: 'Open', value: reports.filter(r => r.status === 'Open' || r.status === 'Pending').length },
+    { label: 'Solved', value: reports.filter(r => r.status === 'Resolved').length },
   ];
 
-  const recentTickets = [
-    { id: 'TKT-001', title: 'Pothole on Main Street', date: 'Feb 15, 2026', status: 'Open', statusColor: 'amber' },
-    { id: 'TKT-002', title: 'Broken Streetlight', date: 'Feb 12, 2026', status: 'In Progress', statusColor: 'blue' },
-    { id: 'TKT-003', title: 'Park Bench Damaged', date: 'Feb 8, 2026', status: 'Resolved', statusColor: 'emerald' },
-    { id: 'TKT-004', title: 'Water Leak on Maple Drive', date: 'Feb 17, 2026', status: 'Open', statusColor: 'amber' },
-  ];
+  const getStatusColor = (status) => {
+    const s = status?.toLowerCase();
+    if (s === 'resolved' || s === 'solved') return 'emerald';
+    if (s === 'open' || s === 'pending') return 'red';
+    if (s === 'progress' || s === 'in progress') return 'amber';
+    return 'slate';
+  };
+
+  const formatStatus = (status) => {
+    if (!status) return 'OPEN';
+    const s = status.toLowerCase();
+    if (s === 'pending') return 'OPEN';
+    if (s === 'in progress') return 'PROGRESS';
+    return status.toUpperCase();
+  };
+
+  if (loading) {
+    return (
+      <div className="flex h-[60vh] items-center justify-center">
+        <Loader2 className="w-10 h-10 text-emerald-600 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
@@ -36,10 +86,10 @@ const Dashboard = () => {
             </span>
             <h1 className="text-4xl font-bold">Welcome to CivicTrack</h1>
             <p className="text-emerald-50/80 text-sm leading-relaxed">
-              Report civic issues, track ticket status, and monitor your community engagement score.
+              Report civic issues, track ticket status, and monitor your community engagement coins.
             </p>
             <div className="flex gap-4 pt-2">
-              <Link to="/add-report" className="bg-white text-emerald-600 px-6 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-emerald-50 transition-colors shadow-lg shadow-black/5">
+              <Link to="/add-report" className="bg-white text-emerald-600 px-6 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 hover:bg-emerald-50 transition-colors shadow-lg">
                 <Plus size={18} /> Create Report
               </Link>
             </div>
@@ -54,7 +104,6 @@ const Dashboard = () => {
             ))}
           </div>
         </div>
-        {/* Abstract shapes for background */}
         <div className="absolute top-[-20%] right-[-10%] w-64 h-64 bg-emerald-400/20 rounded-full blur-3xl"></div>
         <div className="absolute bottom-[-20%] left-[20%] w-48 h-48 bg-emerald-400/10 rounded-full blur-2xl"></div>
       </div>
@@ -62,24 +111,24 @@ const Dashboard = () => {
       {/* Metric Cards Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-[1.5rem] border border-slate-100 shadow-sm hover:shadow-md transition-shadow group">
-          <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider">Open Tickets</p>
-          <p className="text-4xl font-bold mt-2 text-slate-800">2</p>
-          <div className="mt-4 flex items-center gap-2 text-amber-500 text-xs font-medium">
-            <AlertCircle size={14} /> Needs attention
+          <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider">Open Issues</p>
+          <p className="text-4xl font-bold mt-2 text-red-600">{reports.filter(r => r.status === 'Open' || r.status === 'Pending').length}</p>
+          <div className="mt-4 flex items-center gap-2 text-red-500 text-xs font-medium">
+            <AlertCircle size={14} /> Attention required
           </div>
         </div>
         <div className="bg-white p-6 rounded-[1.5rem] border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
           <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider">In Progress</p>
-          <p className="text-4xl font-bold mt-2 text-slate-800">2</p>
-          <div className="mt-4 flex items-center gap-2 text-blue-500 text-xs font-medium">
-            <Clock size={14} /> Being addressed
+          <p className="text-4xl font-bold mt-2 text-amber-500">{reports.filter(r => r.status === 'Progress' || r.status === 'In Progress').length}</p>
+          <div className="mt-4 flex items-center gap-2 text-amber-500 text-xs font-medium">
+            <Clock size={14} /> Being resolved
           </div>
         </div>
         <div className="bg-white p-6 rounded-[1.5rem] border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-          <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider">Resolved</p>
-          <p className="text-4xl font-bold mt-2 text-slate-800">2</p>
+          <p className="text-slate-400 text-xs font-semibold uppercase tracking-wider">Solved</p>
+          <p className="text-4xl font-bold mt-2 text-emerald-600">{reports.filter(r => r.status === 'Resolved' || r.status === 'Solved').length}</p>
           <div className="mt-4 flex items-center gap-2 text-emerald-500 text-xs font-medium">
-            <CheckCircle2 size={14} /> Completed
+            <CheckCircle2 size={14} /> Community fixed
           </div>
         </div>
       </div>
@@ -87,31 +136,40 @@ const Dashboard = () => {
       {/* Recent Tickets List */}
       <div className="bg-white rounded-[2rem] border border-slate-100 shadow-sm p-8">
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-xl font-bold text-slate-900">Recent Tickets</h2>
+          <h2 className="text-xl font-bold text-slate-900">Your Recent Reports</h2>
           <Link to="/reports" className="text-emerald-600 text-xs font-bold flex items-center gap-1 hover:underline">
             View All <ChevronRight size={14} />
           </Link>
         </div>
 
         <div className="space-y-3">
-          {recentTickets.map((ticket) => (
-            <div key={ticket.id} className="flex items-center gap-6 p-4 rounded-2xl hover:bg-slate-50 transition-all border border-transparent hover:border-slate-100 group">
-              <div className={`w-12 h-12 rounded-full flex items-center justify-center bg-${ticket.statusColor}-50 text-${ticket.statusColor}-500 shrink-0`}>
-                {ticket.status === 'Resolved' ? <CheckCircle2 size={20} /> : 
-                 ticket.status === 'In Progress' ? <Clock size={20} /> : <AlertCircle size={20} />}
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-slate-900 group-hover:text-emerald-700 transition-colors uppercase text-sm tracking-tight">{ticket.title}</h3>
-                <p className="text-[10px] text-slate-400 mt-1 font-medium">{ticket.id} · {ticket.date}</p>
-              </div>
-              <div className={`px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-colors
-                ${ticket.status === 'Open' ? 'bg-amber-50 text-amber-600' : 
-                  ticket.status === 'In Progress' ? 'bg-blue-50 text-blue-600' : 
-                  'bg-emerald-50 text-emerald-600'}`}>
-                {ticket.status}
-              </div>
+          {!Array.isArray(reports) || reports.length === 0 ? (
+            <div className="text-center py-10">
+              <p className="text-slate-400 font-medium italic">No reports found in database. Create your first report!</p>
             </div>
-          ))}
+          ) : (
+            reports.slice(0, 5).map((report) => {
+              const color = getStatusColor(report.status);
+              return (
+                <Link key={report.id} to={`/reports/${report.id}`} className="flex items-center gap-6 p-4 rounded-2xl hover:bg-slate-50 transition-all border border-transparent hover:border-slate-100 group">
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center bg-${color}-50 text-${color}-600 shrink-0`}>
+                    {report.status?.toLowerCase() === 'resolved' ? <CheckCircle2 size={20} /> : 
+                     (report.status?.toLowerCase() === 'progress' || report.status?.toLowerCase() === 'in progress') ? <Clock size={20} /> : <AlertCircle size={20} />}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-slate-900 group-hover:text-emerald-700 transition-colors uppercase text-sm tracking-tight">{report.title}</h3>
+                    <p className="text-[10px] text-slate-400 mt-1 font-medium">{report.category} · {report.createdAt ? new Date(report.createdAt).toLocaleDateString() : 'Recent'}</p>
+                  </div>
+                  <div className={`px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-colors
+                    ${color === 'red' ? 'bg-red-50 text-red-600' : 
+                      color === 'amber' ? 'bg-amber-50 text-amber-600' : 
+                      'bg-emerald-50 text-emerald-600'}`}>
+                    {formatStatus(report.status)}
+                  </div>
+                </Link>
+              );
+            })
+          )}
         </div>
       </div>
     </div>

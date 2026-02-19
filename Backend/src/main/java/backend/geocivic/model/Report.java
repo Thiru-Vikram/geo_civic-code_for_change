@@ -24,11 +24,16 @@ public class Report {
     private String category;
 
     @Column(nullable = false)
-    private String status = "Pending";
+    private String status = "Open";
 
     private String imagePath;
     private Double latitude;
     private Double longitude;
+
+    private String assignedAgentName;
+    private String assignedAgentPhoto;
+    private LocalDateTime expectedResolutionTime;
+    private Boolean isVerified = false;
 
     private LocalDateTime createdAt = LocalDateTime.now();
 
@@ -131,6 +136,38 @@ public class Report {
 
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
+    }
+
+    public String getAssignedAgentName() {
+        return assignedAgentName;
+    }
+
+    public void setAssignedAgentName(String assignedAgentName) {
+        this.assignedAgentName = assignedAgentName;
+    }
+
+    public String getAssignedAgentPhoto() {
+        return assignedAgentPhoto;
+    }
+
+    public void setAssignedAgentPhoto(String assignedAgentPhoto) {
+        this.assignedAgentPhoto = assignedAgentPhoto;
+    }
+
+    public LocalDateTime getExpectedResolutionTime() {
+        return expectedResolutionTime;
+    }
+
+    public void setExpectedResolutionTime(LocalDateTime expectedResolutionTime) {
+        this.expectedResolutionTime = expectedResolutionTime;
+    }
+
+    public Boolean getIsVerified() {
+        return isVerified;
+    }
+
+    public void setIsVerified(Boolean isVerified) {
+        this.isVerified = isVerified;
     }
 
     public User getUser() {
