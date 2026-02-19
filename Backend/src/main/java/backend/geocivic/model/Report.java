@@ -1,5 +1,6 @@
 package backend.geocivic.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -31,6 +32,10 @@ public class Report {
     private Double longitude;
 
     private String assignedAgentName;
+    private Long assignedStaffId;
+    private String proofImagePath;
+    private Double resolvedLatitude;
+    private Double resolvedLongitude;
     private String assignedAgentPhoto;
     private LocalDateTime expectedResolutionTime;
     private Boolean isVerified = false;
@@ -39,9 +44,11 @@ public class Report {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonIgnoreProperties({ "password", "reports" })
     private User user;
 
     @OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
+    @JsonIgnoreProperties("report")
     private java.util.List<ReportUpdate> updates;
 
     private Integer upvoteCount = 0;
@@ -148,6 +155,38 @@ public class Report {
 
     public String getAssignedAgentPhoto() {
         return assignedAgentPhoto;
+    }
+
+    public Long getAssignedStaffId() {
+        return assignedStaffId;
+    }
+
+    public void setAssignedStaffId(Long assignedStaffId) {
+        this.assignedStaffId = assignedStaffId;
+    }
+
+    public String getProofImagePath() {
+        return proofImagePath;
+    }
+
+    public void setProofImagePath(String proofImagePath) {
+        this.proofImagePath = proofImagePath;
+    }
+
+    public Double getResolvedLatitude() {
+        return resolvedLatitude;
+    }
+
+    public void setResolvedLatitude(Double resolvedLatitude) {
+        this.resolvedLatitude = resolvedLatitude;
+    }
+
+    public Double getResolvedLongitude() {
+        return resolvedLongitude;
+    }
+
+    public void setResolvedLongitude(Double resolvedLongitude) {
+        this.resolvedLongitude = resolvedLongitude;
     }
 
     public void setAssignedAgentPhoto(String assignedAgentPhoto) {

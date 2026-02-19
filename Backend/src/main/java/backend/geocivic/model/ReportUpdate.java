@@ -1,5 +1,6 @@
 package backend.geocivic.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
@@ -13,6 +14,7 @@ public class ReportUpdate {
 
     @ManyToOne
     @JoinColumn(name = "report_id", nullable = false)
+    @JsonIgnoreProperties({ "updates", "user" })
     private Report report;
 
     private String status;

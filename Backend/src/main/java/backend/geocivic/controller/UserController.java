@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = { "http://localhost:5173", "http://localhost:5174" })
 public class UserController {
 
     @Autowired
@@ -20,6 +20,12 @@ public class UserController {
 
     @Autowired
     private NotificationRepository notificationRepository;
+
+    // Get all staff users (for admin dropdown)
+    @GetMapping("/staff")
+    public List<User> getStaffUsers() {
+        return userRepository.findByRole("STAFF");
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<User> getUserProfile(@PathVariable Long id) {
