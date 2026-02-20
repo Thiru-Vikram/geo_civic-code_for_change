@@ -1,0 +1,18 @@
+# Spring Boot secrets — never commit real credentials
+Backend/src/main/resources/application.properties
+
+# Maven build output
+Backend/target/
+
+# Node / Vite
+Frontend/node_modules/
+Frontend/dist/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db

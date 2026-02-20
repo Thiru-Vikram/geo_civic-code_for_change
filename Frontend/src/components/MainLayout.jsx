@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import Sidebar from "./Sidebar";
+import ChatBot from "./ChatBot";
 import { useNavigate, Outlet, Link } from "react-router-dom";
 import {
   PanelLeft,
@@ -225,6 +226,9 @@ const MainLayout = () => {
           <Outlet />
         </div>
       </main>
+
+      {/* Floating GeoBot — only for citizens */}
+      <ChatBot />
     </div>
   );
 };
