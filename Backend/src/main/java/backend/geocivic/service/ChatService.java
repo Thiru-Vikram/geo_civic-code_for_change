@@ -124,6 +124,39 @@ public class ChatService {
                     "Just ask me anything, or say **\"ticket #12\"** to check a specific complaint!";
         }
 
+        // ── How to use the platform / general overview ────────────────────────
+        if (m.contains("how to use") || m.contains("how does this work") ||
+                m.contains("how does geocivic work") || m.contains("what is geocivic") ||
+                m.contains("explain this") || m.contains("guide me") ||
+                m.contains("get started") || m.contains("how to start") ||
+                m.contains("what can i do") || m.contains("how to use this") ||
+                m.contains("explain") || m.contains("how it works") ||
+                m.contains("how this works") || m.contains("how does it work") ||
+                m.contains("tell me about") || m.contains("overview") ||
+                m.contains("about this") || m.contains("about geocivic") ||
+                m.contains("what does this") || m.contains("what does geocivic") ||
+                m.contains("how the website") || m.contains("how the app") ||
+                m.contains("how the platform") || m.contains("generally") ||
+                m.contains("in simple") || m.contains("brief") ||
+                m.contains("steps") || m.contains("workflow") ||
+                m.contains("process") || m.contains("how does the website") ||
+                m.equals("explain") || m.equals("overview") || m.equals("guide")) {
+            return "🏙️ **Here's how GeoCivic works — in simple steps:**\n\n" +
+                    "**Step 1 — You report the problem** 📸\n" +
+                    "Take a photo of the issue (pothole, broken light, garbage, etc.) and submit it via **Add Report**. Your location is saved automatically.\n\n"
+                    +
+                    "**Step 2 — Admin reviews & assigns** 👨‍💼\n" +
+                    "An admin looks at your report and assigns it to the right staff member to handle it.\n\n" +
+                    "**Step 3 — Staff fixes it & uploads proof** 🔧\n" +
+                    "The staff member works on the issue and uploads a photo as proof that it's been resolved.\n\n" +
+                    "**Step 4 — You go there & verify** 📍\n" +
+                    "Once it's marked resolved, you visit the actual location. The app checks if you're physically nearby (**geofencing**). Only then can you click **Verify** to confirm the fix.\n\n"
+                    +
+                    "**Step 5 — Earn Civic Coins** 🪙\n" +
+                    "You earn coins for reporting and verifying. Collect them for rewards!\n\n" +
+                    "Ask me *\"how to report\"*, *\"check ticket status\"*, or *\"what are civic coins\"* to learn more!";
+        }
+
         // ── How to file / submit a report ─────────────────────────────────────
         if (m.matches(".*(file|submit|raise|create|report|add).*(complaint|report|issue|problem|ticket).*") ||
                 m.contains("how to report") || m.contains("how do i report")) {
@@ -396,8 +429,8 @@ public class ChatService {
                 "role", "system",
                 "content", buildSystemPrompt()));
 
-        // ── User message — prepend ticket context if available ─────────────────
-        String fullUserContent = ticketContext != null
+        // ── User message — prepend ticket context only if it is genuinely present ──
+        String fullUserContent = (ticketContext != null && !ticketContext.isBlank())
                 ? ticketContext + "\nCitizen's question: " + userMessage
                 : userMessage;
 
@@ -416,32 +449,60 @@ public class ChatService {
     private String buildSystemPrompt() {
         return """
                 You are GeoBot, a helpful and friendly AI assistant for the GeoCivic platform.
+
                 GeoCivic is a civic complaint management system where citizens report local issues
                 (potholes, broken streetlights, garbage, etc.) and track their resolution.
 
-                === HOW GeoCivic WORKS ===
+                ========================
+                YOUR RESPONSIBILITY
+                ========================
+                You operate in TWO MODES:
+
+                1\uFE0F\u20E3 GENERAL ASSISTANCE MODE (Default)
+                Use this when NO ticket context is provided.
+                - Answer questions like:
+                  \u2022 What is GeoCivic?
+                  \u2022 How do I report an issue?
+                  \u2022 How does verification work?
+                  \u2022 Greetings or help requests
+                - Guide the citizen on how to use the platform.
+                - Be conversational and helpful.
+
+                2\uFE0F\u20E3 TICKET ASSISTANCE MODE
+                Use this ONLY when ticket data is provided in the prompt.
+                - Explain the ticket status using ONLY the provided data.
+                - Never guess or fabricate missing information.
+                - Clarify what the citizen must do next.
+
+                If ticket information is incomplete, say what is missing instead of assuming.
+
+                ========================
+                HOW GeoCivic WORKS
+                ========================
                 1. A citizen uploads a geo-tagged photo of a civic issue.
-                2. The complaint is assigned to local authorities (staff/agent).
-                3. Authorities work on the issue and upload repair proof (photo).
-                4. The ticket status changes to PENDING VERIFICATION (🟠 ORANGE).
-                5. The citizen must physically visit the location and verify the repair
-                   using geofencing (the app checks their GPS location).
-                6. Only after the citizen's physical verification does the ticket turn
-                   🟢 RESOLVED and close.
+                2. The complaint is assigned to local authorities.
+                3. Authorities repair the issue and upload proof.
+                4. Status becomes \uD83D\uDFE0 PENDING VERIFICATION.
+                5. Citizen must physically visit the site (geofencing validation).
+                6. After verification \u2192 \uD83D\uDFE2 RESOLVED.
 
-                === STATUS COLOUR GUIDE ===
-                🔴 RED (Open / Pending)         — Complaint received, not yet assigned.
-                🟠 ORANGE (In Progress)         — Authorities are working on it.
-                🟠 ORANGE (Pending Verification)— Repair done, waiting for citizen to verify physically.
-                🟢 GREEN (Resolved)             — Citizen verified the repair. Ticket closed.
+                ========================
+                STATUS COLOUR GUIDE
+                ========================
+                \uD83D\uDD34 RED    \u2014 Complaint received.
+                \uD83D\uDFE0 ORANGE \u2014 Work in progress OR waiting for citizen verification.
+                \uD83D\uDFE2 GREEN  \u2014 Verified and closed.
 
-                === YOUR RULES ===
-                - You ONLY explain what is in the TICKET CONTEXT provided. Never guess or fabricate.
-                - If no ticket context is provided, answer general questions about GeoCivic helpfully.
-                - Never reveal other citizens' ticket data.
-                - If asked for information you don't have, say so politely.
-                - Keep replies concise, friendly, and helpful.
-                - You support future multilingual responses — always match the language the citizen uses.
+                ========================
+                BEHAVIOUR RULES
+                ========================
+                - Always try to help. Do NOT reject normal conversation.
+                - If user greets you \u2192 greet back.
+                - If user asks about the website \u2192 explain GeoCivic.
+                - Only restrict yourself when discussing a specific ticket.
+                - Never expose other citizens' data.
+                - Keep replies clear, friendly, and concise.
+                - Match the user's language automatically.
                 """;
     }
 
