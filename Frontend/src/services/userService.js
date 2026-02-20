@@ -26,3 +26,8 @@ export const getNotifications = (userId) => {
 export const markNotificationRead = (notifId) => {
     return axios.put(`${API_URL}/notifications/${notifId}/read`);
 };
+
+// Redeem a reward item with CC coins
+export const redeemReward = (userId, cost, itemName) => {
+    return axios.post(`${API_URL}/${userId}/redeem`, { cost, itemName });
+};

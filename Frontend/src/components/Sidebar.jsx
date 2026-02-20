@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Home, FileText, LogOut } from "lucide-react";
+import { Home, FileText, LogOut, Gift } from "lucide-react";
 
 const Sidebar = ({ isOpen }) => {
   const location = useLocation();
@@ -24,6 +24,7 @@ const Sidebar = ({ isOpen }) => {
   const navItems = [
     { title: "Home", icon: <Home size={20} />, path: "/dashboard" },
     { title: "My Reports", icon: <FileText size={20} />, path: "/reports" },
+    { title: "Rewards", icon: <Gift size={20} />, path: "/rewards" },
   ];
 
   const bottomItems = [];

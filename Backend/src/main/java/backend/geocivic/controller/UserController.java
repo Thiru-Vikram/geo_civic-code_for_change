@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -60,5 +61,21 @@ public class UserController {
                     return ResponseEntity.ok(user);
                 })
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PostMapping("/{id}/redeem")
+    public ResponseEntity<?> redeemReward(@PathVariable Long id, @RequestBody Map<String, Object> body) {
+        int cost = (int) body.get("cost");
+        String itemName = (String) body.getOrDefault("itemName", "Reward");
+        return userRepository.findById(id).map(user -> {
+            int current = user.getCivicCoins() != null ? user.getCivicCoins() : 0;
+            if (current < cost) {
+                return ResponseEntity.badRequest()
+                        .body("Not enough CC Coins. You need " + cost + " but have " + current + ".");
+            }
+            user.setCivicCoins(current - cost);
+            userRepository.save(user);
+            return ResponseEntity.ok(user);
+        }).orElse(ResponseEntity.notFound().build());
     }
 }

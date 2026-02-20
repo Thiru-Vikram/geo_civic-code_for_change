@@ -11,6 +11,7 @@ import Reports from "./pages/Reports";
 import AddReport from "./pages/AddReport";
 import Profile from "./pages/Profile";
 import ReportDetails from "./pages/ReportDetails";
+import Rewards from "./pages/Rewards";
 import MainLayout from "./components/MainLayout";
 import StaffLayout from "./components/StaffLayout";
 import StaffDashboard from "./pages/staff/StaffDashboard";
@@ -72,6 +73,7 @@ function App() {
             <Route path="reports/:id" element={<ReportDetails />} />
             <Route path="add-report" element={<AddReport />} />
             <Route path="profile" element={<Profile />} />
+            <Route path="rewards" element={<Rewards />} />
           </Route>
 
           {/* Staff Protected Routes */}
