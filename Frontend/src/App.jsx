@@ -21,6 +21,7 @@ import AdminLayout from "./components/AdminLayout";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminAllReports from "./pages/admin/AdminAllReports";
 import AdminReportDetail from "./pages/admin/AdminReportDetail";
+import AdminAnalytics from "./pages/admin/AdminAnalytics";
 import StaffMyTasks from "./pages/staff/StaffMyTasks";
 import "./App.css";
 
@@ -106,6 +107,7 @@ function App() {
             <Route path="dashboard" element={<AdminDashboard />} />
             <Route path="reports" element={<AdminAllReports />} />
             <Route path="reports/:id" element={<AdminReportDetail />} />
+            <Route path="analytics" element={<AdminAnalytics />} />
           </Route>
         </Routes>
       </div>

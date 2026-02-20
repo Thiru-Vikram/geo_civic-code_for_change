@@ -9,6 +9,7 @@ import {
   PanelLeft,
   Clock,
   CheckSquare,
+  BarChart3,
 } from "lucide-react";
 import {
   getNotifications,
@@ -79,6 +80,11 @@ const AdminLayout = () => {
       title: "All Reports",
       icon: <FileText size={20} />,
       path: "/admin/reports",
+    },
+    {
+      title: "Analytics",
+      icon: <BarChart3 size={20} />,
+      path: "/admin/analytics",
     },
   ];
 
